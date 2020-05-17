@@ -119,7 +119,6 @@ func getComboDiscount(items []string) float32 {
 		}
 		if comboCounter[ci] == cLen {
 			comboKey := strings.Join(comboMemTable[ci], "")
-
 			discount := comboKeyMemTable[comboKey]
 			if discount > comboDiscounts {
 				comboDiscounts = discount
