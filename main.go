@@ -80,6 +80,7 @@ func main() {
 	r.Run(":8081") // listen and serve on 0.0.0.0:8080
 }
 
+// Product store
 func getProducts() map[string]float32 {
 	products := map[string]float32{}
 	products[shoes] = 10.00
@@ -128,6 +129,7 @@ func getComboDiscount(items []string) float32 {
 	return comboDiscounts
 }
 
+// Save mem table
 func setComboDiscount(comboList []combos) {
 	for _, k := range comboList {
 		combo := k.Combo
