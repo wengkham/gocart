@@ -27,6 +27,7 @@ func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*")
 
+	// Controllers
 	r.GET("/", func(c *gin.Context) {
 		products := getProducts()
 		comboList := createComboDiscount()
@@ -41,21 +42,33 @@ func main() {
 		items := c.PostFormArray("items")
 		checkouts, prices := getCheckoutItems(items)
 		id := createMemTable(checkouts, prices)
-		c.HTML(http.StatusOK, "checkout.tmpl", gin.H{
-			"title":     "Checkout",
-			"checkouts": checkouts,
-			"prices":    prices,
-			"id":        id,
-		})
+
+		if len(items) == 0 {
+			c.Redirect(http.StatusMovedPermanently, "/")
+			c.Abort()
+		} else {
+			c.HTML(http.StatusOK, "checkout.tmpl", gin.H{
+				"title":     "Checkout",
+				"checkouts": checkouts,
+				"prices":    prices,
+				"id":        id,
+			})
+		}
 	})
 
 	r.POST("/pay", func(c *gin.Context) {
 		id, _ := strconv.Atoi(c.PostForm("id"))
-		prices := pricesMemTable[int64(id)]
-		c.HTML(http.StatusOK, "pay.tmpl", gin.H{
-			"title":  "Pay",
-			"prices": prices,
-		})
+		prices, exist := pricesMemTable[int64(id)]
+
+		if !exist {
+			c.Redirect(http.StatusMovedPermanently, "/")
+			c.Abort()
+		} else {
+			c.HTML(http.StatusOK, "pay.tmpl", gin.H{
+				"title":  "Pay",
+				"prices": prices,
+			})
+		}
 	})
 
 	r.POST("/done", func(c *gin.Context) {
@@ -79,6 +92,7 @@ func getProducts() map[string]float32 {
 	return products
 }
 
+//Discount store
 func getDiscount() map[string]float32 {
 	discounts := map[string]float32{}
 	discounts[shoes] = 0.03
@@ -89,6 +103,7 @@ func getDiscount() map[string]float32 {
 	return discounts
 }
 
+// Retrieve combo discount if any
 func getComboDiscount(items []string) float32 {
 	comboCounter := map[int]int{}
 	var comboDiscounts float32
@@ -123,6 +138,7 @@ func setComboDiscount(comboList []combos) {
 	}
 }
 
+// Combo discount store
 func createComboDiscount() []combos {
 	comboList := []combos{}
 	comboList = append(comboList, combos{Combo: []string{shoes, jeans}, Discount: 20})
@@ -133,6 +149,7 @@ func createComboDiscount() []combos {
 	return comboList
 }
 
+// Checkout
 func getCheckoutItems(items []string) (map[string]map[string]string, map[string]string) {
 	checkout := map[string]map[string]string{}
 	prices := map[string]string{}
@@ -170,6 +187,7 @@ func getCheckoutItems(items []string) (map[string]map[string]string, map[string]
 	return checkout, prices
 }
 
+// Cart and price store
 func createMemTable(checkouts map[string]map[string]string, prices map[string]string) int64 {
 	now := time.Now()
 	sec := now.Unix()
