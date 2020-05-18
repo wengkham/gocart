@@ -104,7 +104,9 @@ func getDiscount() map[string]float32 {
 	return discounts
 }
 
-// Retrieve combo discount if any
+/*
+Perform combo search with items in cart
+*/
 func getComboDiscount(items []string) float32 {
 	comboCounter := map[int]int{}
 	var comboDiscounts float32
@@ -129,6 +131,10 @@ func getComboDiscount(items []string) float32 {
 }
 
 // Save mem table
+/**
+The idea is to create a associate arrays consist of combo-able products and their discount
+to facilitate a search during checkout
+*/
 func setComboDiscount(comboList []combos) {
 	for _, k := range comboList {
 		combo := k.Combo
