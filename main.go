@@ -132,7 +132,7 @@ func getComboDiscount(items []string) float32 {
 
 // Save mem table
 /**
-The idea is to create a associate arrays consist of combo-able products and their discount
+The idea is to create a associative arrays consist of combo-able products and their discount
 to facilitate a search during checkout
 */
 func setComboDiscount(comboList []combos) {
